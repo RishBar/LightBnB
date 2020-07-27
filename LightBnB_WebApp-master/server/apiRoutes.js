@@ -1,21 +1,6 @@
 // const pool = require('./database');
 module.exports = function(router, database) {
 
-  // router.get('/properties', (req, res) => {
-  //   pool.getAllProperties(req.query, 20)
-  //     .then(properties => res.send({properties}))
-  //     .catch(e => {
-  //       console.error(e);
-  //       res.send(e);
-  //     });
-  // });
-
-  // router.get('/properties', (req, res) => {
-  //   pool.getAllProperties((properties) => {
-  //     res.send(properties);
-  //   });
-  // });
-
   router.get('/properties', (req, res) => {
     database.getAllProperties(req.query, 20)
     .then(properties => res.send({properties}))
