@@ -85,6 +85,7 @@ const addUser = function(user) {
     $1, $2, $3)
     RETURNING *;`;
   const userDetails = [user.name, user.email, user.password];
+  console.log("adding userrrrrr");
   return pool.query(queryString, userDetails)
   .then(res => res.rows[0]);
 };
@@ -146,7 +147,6 @@ const getAllProperties = function(options, limit = 10) {
   JOIN property_reviews ON properties.id = property_id
   JOIN users ON properties.owner_id = users.id
   `;
-  console.log(options);
   // 3
   if (options.city) {
     queryParams.push(`%${options.city}%`);
@@ -173,7 +173,6 @@ const getAllProperties = function(options, limit = 10) {
     if (queryParams[1]) {
       queryString += `AND cost_per_night < $${queryParams.length}`;
     } else {
-      console.log(queryParams,'is not equal 1');
       queryString += `WHERE cost_per_night < $${queryParams.length}`;
     }
   }
@@ -193,7 +192,6 @@ const getAllProperties = function(options, limit = 10) {
   `;
 
   // 5
-  console.log(queryString, queryParams);
 
   // 6
   return pool.query(queryString, queryParams)
@@ -217,9 +215,15 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
-}
+  const queryString = `
+  INSERT INTO properties (owner_id, title, description, thumbnail_photo_url, cover_photo_url, parking_spaces,
+  number_of_bathrooms, number_of_bedrooms, cost_per_night, country, street, city, province, post_code) 
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+  RETURNING *;
+  `
+  const queryParams = [property.owner_id, property.title, property.description, property.thumbnail_photo_url, property.cover_photo_url, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms, property.cost_per_night, property.country, property.street, property.city, property.province, property.post_code]
+  return pool.query(queryString, queryParams).then((res) => {
+    return res.rows[0];
+  });
+};
 exports.addProperty = addProperty;
